@@ -1,5 +1,5 @@
 #!/bin/bash
-helloArray=("H" "e" "l" "l" "o" " " "w" "o" "r" "l" "d")
+helloArray=("H" "e" "l" "l" "o" "_" "w" "o" "r" "l" "d")
 sleepLength=0.05
 
 
@@ -22,3 +22,5 @@ while true; do
     sleep ${sleepLength}
   done
 done
+
+exit
