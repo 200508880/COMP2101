@@ -14,10 +14,37 @@
 
 #  display a summary of what was rolled, and what the results of your arithmetic were
 
+dieSides=12
+dieBias=1
+dieQuantity=10
+runningTotal=0
+outputString="Rolled "
+
 # Tell the user we have started processing
-echo "Rolling..."
+echo "Rolling ${dieQuantity}d${dieSides}..."
 # roll the dice and save the results
-die1=$(( RANDOM % 6 + 1))
-die2=$(( RANDOM % 6 + 1 ))
+# Borrowing seq command
+for i in $(seq 1 $dieQuantity); do
+  die1=$(( RANDOM % "$dieSides" + "$dieBias" ))
+
+  runningTotal=$(("${runningTotal}" + "${die1}"))
+
+  outputString="${outputString}${die1}"
+  if [[ "$i" -eq "$dieQuantity" ]]; then
+    outputString="${outputString}."
+  else
+    outputString="${outputString}, "
+  fi
+
+# Tested with dieQuantity=4000 to ensure the range is correct:
+#  if [[ "$die1" -lt "1" ]]; then echo "rolled too low: ${die1}"; fi
+#  if [[ "$die1" -gt "20" ]]; then echo "rolled too high: ${die1}"; fi
+
+done
+#die2=$(( RANDOM % $dieSides + $dieBias ))
 # display the results
-echo "Rolled $die1, $die2"
+#echo "Rolled $die1, $die2"
+echo "${outputString}"
+# Outsource division to bc
+dieAverage=$( bc <<< "scale=2; $runningTotal / $dieQuantity" )
+echo "The average of these rolls was ${dieAverage}."
