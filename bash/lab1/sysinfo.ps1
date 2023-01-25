@@ -9,7 +9,7 @@ Write-Host 'Host information:'
 Get-Host | Format-List
 
 Write-Host 'Root filesystem status:'
-Get-PSDrive | Format-Table
+Get-PSDrive / | Format-Table
 
 # ipconfig and Get-NetIPAddress do not exist
 # I feel like running the Linux equivalents isn't sporting

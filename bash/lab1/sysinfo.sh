@@ -1,6 +1,6 @@
 #!/bin/bash
 # This is so much easier in Bash
-echo FQDN: $(hostname)
+echo FQDN: "$(hostname)"
 
 # Add a blank space
 echo
@@ -14,6 +14,8 @@ echo
 # Grepping for inet with a trailing whitespace excludes ipv6 and ensures a single line
 # (at least in this environment)
 iface=$(nmcli --terse --field DEVICE device status | grep -v 'lo')
+# Shellcheck is telling me to quote these lines to prevent word splitting
+# With the quotes used in the lines themselves, that doesn't seem viable
 echo IPv4 Address: $(ip addr show dev "${iface}" | grep -i "inet " | awk '{ print $2 }')
 # Repeat for ipv6
 echo IPv6 Address: $(ip addr show dev "${iface}" | grep -i "inet6" | awk '{ print $2 }')
@@ -21,4 +23,4 @@ echo IPv6 Address: $(ip addr show dev "${iface}" | grep -i "inet6" | awk '{ prin
 echo
 echo Root filesystem status:
 # Use the built-in df tool with -h for pretty size readings
-df -h
+df -h /
