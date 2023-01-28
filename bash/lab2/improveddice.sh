@@ -14,9 +14,16 @@
 
 #  display a summary of what was rolled, and what the results of your arithmetic were
 
-dieSides=12
+echo "Improved Dice Roller"
+
+echo "How many dice?"
+read dieQuantity
+#dieQuantity=10
+echo "How many sides per die?"
+read dieSides
+#dieSides=12
+
 dieBias=1
-dieQuantity=10
 runningTotal=0
 outputString="Rolled "
 
