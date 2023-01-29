@@ -8,12 +8,11 @@
 # Task 2: Change the output to only show:
 #    the sum of the 3 numbers with a label
 #    the product of the 3 numbers with a label
-echo "Enter a number"
-read firstnum
-echo "Enter another number"
-read secondnum
-echo "Enter a third number"
-read thirdnum
+
+# read --help shows -p is prompt
+read -p "Enter a number: " firstnum
+read -p "Enter another number: " secondnum
+read -p "Enter a third number: " thirdnum
 sum=$((firstnum + secondnum + thirdnum))
 product=$((firstnum *  secondnum * thirdnum))
 #fpdividend=$(awk "BEGIN{printf \"%.2f\", $firstnum/$secondnum}")
