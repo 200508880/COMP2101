@@ -6,9 +6,10 @@
 # Taks 2: Only show: the sum and the product, each with a label
 
 # Same as in bash, prompt for three numbers, save them to variables
-[int]$firstnum = Read-Host "Enter a number: "
-[int]$secondnum = Read-Host "Enter another number: "
-[int]$thirdnum = Read-Host "Enter a third number: "
+# Read-Host seems to already insert a ": " so don't add that
+[int]$firstnum = Read-Host "Enter a number"
+[int]$secondnum = Read-Host "Enter another number"
+[int]$thirdnum = Read-Host "Enter a third number"
 
 # Do the math
 # Oh shoot, these are typed as strings, aren't they
