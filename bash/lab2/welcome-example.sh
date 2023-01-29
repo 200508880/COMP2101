@@ -17,15 +17,46 @@
 ###############
 # Variables   #
 ###############
-title="$(whoami oh wait)"
 myname="$(whoami)"
-hostname="$(hostname)"
+hostname="$(hostname -s)"
+
+weekday=$(date +%A)
+
+dateString=$(date +"%I:%M %p")
+
+# Is it too early to be bringing in case logic
+
+case $weekday in
+  "Sunday")
+    title="Shogun"
+    ;;
+  "Monday")
+    title="Taisho"
+    ;;
+  "Tuesday")
+    title="Chujo"
+    ;;
+  "Wednesday")
+    title="Shosho"
+    ;;
+  "Thursday")
+    title="Taisa"
+    ;;
+  "Friday")
+    title="Shosa"
+    ;;
+  "Saturday")
+    title="Tai-i"
+    ;;
+esac
+
 
 ###############
 # Main        #
 ###############
 cat <<EOF
 
-Welcome to planet $hostname, "$title $myname!"
+Welcome to planet ${hostname}, "${title} ${myname}!"
+It is ${weekday} at ${dateString}.
 
 EOF
