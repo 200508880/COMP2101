@@ -7,7 +7,14 @@
 hostname=$(hostname -s)
 FQDN=$(hostname)
 # Let's do both these things in one line to change things up:
-ip=$(ip addr show dev "$(nmcli --terse --field DEVICE device status | grep -v 'lo')" | grep -i "inet " | awk '{ print $2 }')
+#ip=$(ip addr show dev "$(nmcli --terse --field DEVICE device status | grep -v 'lo')" | grep -i "inet " | awk '{ print $2 }')
+
+# Never mind, I just read the part about "ip rout default interface"
+# I do feel better about that being non-ambiguous, at least
+
+iface=$(ip route | head -n 1 | awk '{ print $5 }')
+ip=$(ip addr show dev "${iface}" | grep -i "inet " | awk '{ print $2 }')
+
 # Today I learned about Perl-Compatible Regular Expressions.
 osver=$(hostnamectl | grep -oP 'Operating System: \K.*')
 fsfree=$(df -h / | tail -n +2 | awk '{ print $4 }')
