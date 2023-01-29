@@ -17,9 +17,9 @@
 ###############
 # Variables   #
 ###############
-title="Overlord"
-myname="dennis"
-hostname="myhostname"
+title="$(whoami oh wait)"
+myname="$(whoami)"
+hostname="$(hostname)"
 
 ###############
 # Main        #
