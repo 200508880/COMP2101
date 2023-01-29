@@ -37,7 +37,10 @@ for i in $(seq 1 $dieQuantity); do
   runningTotal=$(("${runningTotal}" + "${die1}"))
 
   outputString="${outputString}${die1}"
-  if [[ "$i" -eq "$dieQuantity" ]]; then
+
+  # Lots of trial and error on this one.
+  # The logic is slightly different than in the ps1.
+  if [[ "$i" -ge "$dieQuantity" ]]; then
     outputString="${outputString}."
   else
     outputString="${outputString}, "
@@ -55,3 +58,7 @@ echo "${outputString}"
 # Outsource division to bc
 dieAverage=$( bc <<< "scale=2; $runningTotal / $dieQuantity" )
 echo "The average of these rolls was ${dieAverage}."
+
+# Oh. The average DOES make sense because the rolls don't include 0.
+# It SHOULD be roughly halfway between the two median numbers.
+# Tested with 2000 rolls of a 3-sided die and got 1.978 (pwsh) and 2.01 (bash)
