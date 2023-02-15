@@ -54,9 +54,10 @@ esac
 ###############
 # Main        #
 ###############
-cat <<EOF
+/usr/games/cowsay <<EOF
 
 Welcome to planet ${hostname}, "${title} ${myname}!"
+
 It is ${weekday} at ${dateString}.
 
 EOF

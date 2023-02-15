@@ -32,10 +32,11 @@ switch ($weekday) {
   "Friday" { $title = "Shosha" }
   "Saturday" { $title = "Tai-i" }
 }
-# Well, that's a bit more compact anyway
 
-# Don't have the energy to find out if pwsh accepts here documents
-Write-Host "Welcome to planet ${hostname}, ${title} ${myname}!"
-# Get-Date already includes a period, whether I wanted one or not
-Write-Host "It is ${weekday} at ${datestring}"
-Write-Host ""
+$cowsays = @"
+Welcome to planet ${hostname}, ${title} ${myname}!
+
+It is ${weekday} at ${datestring}
+"@
+
+/usr/games/cowsay -b "$cowsays"
