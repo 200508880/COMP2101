@@ -14,8 +14,8 @@ echo "Deploying a webserver container."
 # Just to keep it straight in my own head, a grep exit code of 0 means matches were found
 # grep exit code of 1 means no matches were found
 # For these tests, any number of matches means no action is required.
-apt-cache policy curl | grep Installed > /dev/null
-[ $? -ne "0" ] && echo "Curl not installed. Installing Curl now." && sudo apt install curl && echo
+apt-cache policy curl | grep Installed | grep none > /dev/null
+[ $? -eq "0" ] && echo "Curl not installed. Installing Curl now." && sudo apt install curl && echo
 
 # Nope, not falling for THAT again.
 #snap list | grep "^juju" > /dev/null
