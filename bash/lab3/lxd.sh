@@ -11,8 +11,11 @@ echo "Deploying a webserver container."
 #iface=$(ip route | head -n 1 | awk '{ print $5 }')
 #ip=$(ip addr show dev "${iface}" | grep -i "inet " | awk '{ print $2 }')
 
+apt-cache policy curl | grep Installed | grep none > /dev/null
+[ $? ] && echo "Curl not installed. Installing Curl now." && sudo apt install curl
+
 snap list | grep "^juju" > /dev/null
-[ $? ] && sudo snap install juju
+[ $? ] && echo "Juju not installed. Installing Juju now." && sudo snap install juju --classic
 juju bootstrap localhost COMP2101-S22 --wait
 juju deploy apache2 --wait
 
