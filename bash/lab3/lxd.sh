@@ -32,8 +32,13 @@ ip link show | grep "lxdbr0" > /dev/null
 echo
 echo "Installing Apache2 container..."
 lxc launch ubuntu:20.04 COMP2101-W23
-lxc exec COMP2101-W23 -- apt update > /dev/null
-lxc exec COMP2101-W23 -- apt install -y apache2 > /dev/null
+# Lots of failed hits when running apt update too early
+echo "Waiting for container network interface to be ready."
+sleep 10
+echo "Updating package list..."
+lxc exec COMP2101-W23 -- apt update &> /dev/null
+echo "Installing Apache2..."
+lxc exec COMP2101-W23 -- apt install -y apache2 &> /dev/null
 echo "Done."
 
 echo
