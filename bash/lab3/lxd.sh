@@ -1,3 +1,4 @@
+#!/bin/bash
 # Lab 3 Graded Portion
 # Installing and Configuring an Apache Container
 #
@@ -11,7 +12,7 @@ echo "Deploying a webserver container."
 #ip=$(ip addr show dev "${iface}" | grep -i "inet " | awk '{ print $2 }')
 
 snap list | grep "^juju" > /dev/null
-if [ $? ]; then sudo snap install juju
+[ $? ] && sudo snap install juju
 juju bootstrap localhost COMP2101-S22 --wait
 juju deploy apache2 --wait
 
