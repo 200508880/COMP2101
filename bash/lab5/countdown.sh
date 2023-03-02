@@ -11,8 +11,42 @@
 programName="$0" # used by error_functions.sh
 sleepTime=1 # delay used by sleeptime
 numberOfSleeps=10 # how many sleeps to wait for before quitting for inactivity
+[ -z "$verbose" ] && verbose="no"
+[ -z "$debug" ] && debug="no"
+
+#### Traps
+
+# This trap catches the interrupt signal and calls a function to reset the timer.
+trap bad-user SIGINT
+trap good-user SIGQUIT
 
 #### Functions
+
+# This function resets the timer and warns the user.
+
+function bad-user {
+        [ $verbose = "yes" ] && echo "Interrupt signal detected. Resetting timer."
+        if [ $debug = "yes" ]; then
+          echo "debug hi what"
+          echo "$sleepCount $numberOfSleeps"
+          sleep 3
+        fi
+        timeMessage="Ah ah ah, what's the magic word?"
+        sleepCount=$numberOfSleeps
+        doCountdown|dialog --gauge "$timeMessage" 7 60
+}
+
+# This function congratulates the user and exits the script.
+
+function good-user {
+        # Leaving these verbose and debug conditions since I suspect we'll be sourcing these scripts later
+        # Glad to learn about THIS little tool...
+        stty sane
+        [ $verbose = "yes" ] && echo "Quit signal detected. Exiting execution."
+        clear
+        echo "You win this time, Gadget!"
+        exit
+}
 
 # This function will send an error message to stderr
 # Usage:
@@ -43,8 +77,12 @@ EOF
 
 # Produce the numbers for the countdown
 function doCountdown {
-while [ $sleepCount -gt 0 ]; do
-    echo $((sleepCount * 100 / $numberOfSleeps))
+# Changing to -ge so we get to see 0% and an empty bar
+while [ $sleepCount -ge 0 ]; do
+    # hm, this didn't work. I guess dialog is taking the value of timeMessage down below.
+    [ $sleepCount -eq 0 ] && timeMessage="Wait counter expired, exiting peacefully"
+#    echo "$timeMessage 7 60 $((sleepCount * 100 / $numberOfSleeps))"
+    echo "$((sleepCount * 100 / $numberOfSleeps))"
     sleepCount=$((sleepCount - 1))
     sleep $sleepTime
 done
@@ -84,7 +122,12 @@ fi
 
 sleepCount=$numberOfSleeps
 
-doCountdown|dialog --gauge "Remaining Time" 7 60
+timeMessage="Remaining Time"
+
+# bear with me...
+# nah, that didn't work. Can't just pass everything in from doCountdown so we can tailor the title.
+#doCountdown|dialog --gauge
+doCountdown|dialog --gauge "$timeMessage" 7 60
 stty sane
 
 echo "Wait counter expired, exiting peacefully"
