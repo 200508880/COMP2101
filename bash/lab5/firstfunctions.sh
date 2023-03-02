@@ -14,11 +14,22 @@
 ##############
 # Define functions for error messages and displaying command line help.
 function displayusage {
-  echo "Usage:$0 [-h | --help]"
+  echo "Usage:$0 [-h | --help] [-d | --debug] [-v | --verbose]"
 }
 function errormessage {
   echo "$@" >&2
 }
+function displaySettings {
+  [ $verbose = "yes" ] && echo "Verbose mode is on."
+  [ $debug = "yes" ] && echo "Debug mode is on."
+}
+
+############
+# DEFAULTS
+############
+# Set default values to variables in case they are not set by the user.
+verbose="no"
+debug="no"
 
 ##################
 # CLI Processing
@@ -26,6 +37,12 @@ function errormessage {
 # Process the command line options, saving the results in variables for later use.
 while [ $# -gt 0 ]; do
   case "$1" in
+    -d|--debug)
+      debug="yes"
+      ;;
+    -v|--verbose)
+      verbose="yes"
+      ;;
     -h|--help)
       displayusage
       exit 0
@@ -38,3 +55,5 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+displaySettings
