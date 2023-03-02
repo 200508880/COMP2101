@@ -11,27 +11,82 @@
 # Start of section to be done for TASK
 # This is where your changes will go for this TASK
 
+
+
+# I can't edit the part that runs netid.sh, but I've kept that in a separate directory:
+PATH="$PATH:/home/gord/COMP2101/bash/lab4"
+
+# Sourcing countdown for its already defined traps and functions
+# The argument -s has been defined in countdown.sh to mean "source without execution".
+# I'm hoping that this is a clever execution on class materials and not plagiarism
+source countdown.sh -s
+# Haha, I'm leaving the "moose bit my sister" part in.
+
+# Well these were just in the slideshow and I can't see any other way of writing them
+# I'm also hoping this will override the one sourced from countdown.sh, maybe that wasn't so clever
+# Juuuust in case... let's untrap them
+trap - SIGINT
+trap - SIGQUIT
+trap cleanup SIGHUP
+trap cleanup SIGTERM
+trap cleanup SIGINT
+
+# error-message and error-exit are sourced from countdown.sh:
+#
 # This function will send an error message to stderr
 # Usage:
 #   error-message ["some text to print to stderr"]
-function error-message {
+#function error-message {
 
-}
+#}
 
 # This function will send a message to stderr and exit with a failure status
 # Usage:
 #   error-exit ["some text to print to stderr" [exit-status]]
-function error-exit {
+#function error-exit {
 
-}
+#}
 #This function displays help information if the user asks for it on the command line or gives us a bad command line
 function displayhelp {
-
+  echo "sysconfig.sh"
+  echo "This script displays system information."
+  echo "  Usage: sysconfig.sh [options]"
+  echo "  Options:"
+  echo "    -h|--help: show this help message and quit."
+  echo "    --host: show hostname information."
+  echo "    --domain: show domain information."
+  echo "    --ipconfig: show network information."
+  echo "    --os: show operating system information."
+  echo "    --cpu: show processor information."
+  echo "    --memory: show RAM information."
+  echo "    --disk: show storage information."
+  echo "    --printer: show printer information."
+  echo "  Any of the above options in any combination provide only that information."
+  echo "  When run with no options specified, sysinfo will provide information on all systems."
+  echo
+  echo "And now, a message from our sponsor, who is a moose."
 }
 
 # This function will remove all the temp files created by the script
 # The temp files are all named similarly, "/tmp/somethinginfo.$$"
 # A trap command is used after the function definition to specify this function is to be run if we get a ^C while running
+
+function cleanup {
+  # Dang, I can't use the verbose logic I'd built into the previous scripts because I can't edit the options parser.
+  if [ "$(ls /tmp | grep ".$$" | wc -l)" -gt 0 ]; then
+    # This seems to work in tests
+    rm /tmp/*.$$
+  fi
+  # I guess this needs to manually specify that it should still exit after being interrupted.
+  exit
+}
+
+# Giving myself more space here so that I have a clearer visual distinction and don't start editing below
+
+
+
+
+
 
 # End of section to be done for TASK
 # Remainder of script does not require any modification, but may need to be examined in order to create the functions for TASK
