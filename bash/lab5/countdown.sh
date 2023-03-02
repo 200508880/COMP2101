@@ -13,6 +13,7 @@ sleepTime=1 # delay used by sleeptime
 numberOfSleeps=10 # how many sleeps to wait for before quitting for inactivity
 [ -z "$verbose" ] && verbose="no"
 [ -z "$debug" ] && debug="no"
+[ -z "$source" ] && source="no"
 
 #### Traps
 
@@ -67,8 +68,9 @@ function error-exit {
 }
 function usage {
         cat <<EOF
-Usage: ${programName} [-h|--help ] [-w|--waittime waittime] [-n|--waitcount waitcount]
+Usage: ${programName} [-h|--help ] [-w|--waittime waittime] [-n|--waitcount waitcount] [-s|--source]
 Default waittime is 1, waitcount is 10
+If the -s|--source argument is passed, do not execute anything.
 EOF
 }
 
@@ -105,6 +107,9 @@ while [ $# -gt 0 ]; do
             usage
             exit
             ;;
+        -s | --source )
+          source="yes"
+          ;;
         * )
             usage
             error-exit "$1 not a recognized option"
@@ -124,10 +129,14 @@ sleepCount=$numberOfSleeps
 
 timeMessage="Remaining Time"
 
-# bear with me...
-# nah, that didn't work. Can't just pass everything in from doCountdown so we can tailor the title.
-#doCountdown|dialog --gauge
-doCountdown|dialog --gauge "$timeMessage" 7 60
-stty sane
+if [ $source = "no" ]; then
 
-echo "Wait counter expired, exiting peacefully"
+  # bear with me...
+  # nah, that didn't work. Can't just pass everything in from doCountdown so we can tailor the title.
+  #doCountdown|dialog --gauge
+  doCountdown|dialog --gauge "$timeMessage" 7 60
+  stty sane
+
+  echo "Wait counter expired, exiting peacefully"
+  exit
+fi
