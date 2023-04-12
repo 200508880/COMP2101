@@ -52,15 +52,52 @@ function getRam {
 }
 #getSystem
 #getCPU
-getRam
 
 # win32_diskdrive, win32_diskpartition, win32_logicaldisk
 #  Vendor, model, size, space (max, free, percentage in a table, one logical disk per line)
 
 function getDisk {
 	# disk report only
+	#$disks = Get-WmiObject Win32_LogicalDisk | Select {$_.GetRelated("Win32_DiskPartition").DeviceID}
+	$disks = Get-WmiObject win32_logicaldisk | select Description,DeviceID,Filesystem,`
+		@{N="Manufacturer"; E={`
+			$tempID = $_.DeviceId;`
+			if($_.Description -eq "CD-ROM Disc"){(Get-WmiObject Win32_CdromDrive | Where {$_.Id -eq $tempID}).Manufacturer}`
+			#else{($_.GetRelated("Win32_DiskPartition") | Select {$_.GetRelated("Win32_DiskDrive").Manufacturer})}`
+			# Whew, this took so much trial and error.
+			# Chaining GetRelated() felt like a breakthrough
+			else{($_.GetRelated("Win32_DiskPartition").GetRelated("Win32_DiskDrive").Manufacturer)}`
+		}},`
+		# Definitely just copying and pasting that instead of finding a better way
+		@{N="Model"; E={`
+			$tempID = $_.DeviceId;`
+			if($_.Description -eq "CD-ROM Disc"){(Get-WmiObject Win32_CdromDrive | Where {$_.Id -eq $tempID}).Name}`
+			else{($_.GetRelated("Win32_DiskPartition").GetRelated("Win32_DiskDrive").Model)}`
+		}},`
+		@{N="Free (GB)"; E={[math]::Round($_.FreeSpace/1gb,2)}},`
+		@{N="Total (GB)"; E={[math]::Round($_.Size/1gb,2)}},`
+		@{N="Free (%)"; E={[math]::Round($_.FreeSpace/$_.Size,2)*100}},`
+		@{N="Location"; E={if($_.Description -eq "CD-ROM Disc"){ "Optical Media"} else {$_.GetRelated("win32_diskpartition").DeviceID}}}
+
+#	Foreach ($disk in $disks){
+#		if($disk.Description -eq "CD-ROM Disc"){
+#			$disk | Add-Member NoteProperty "Manufacturer" (Get-WmiObject Win32_CdromDrive | Where {$_.Drive -eq $disk.DeviceID} | Select Manufacturer).Manufacturer
+#		}
+#		else{
+#			$PhysicalDisk = (Get-WmiObject Win32_DiskPartition | Where {$_.DeviceID -eq $disk.Location} | Select { $_.GetRelated("Win32_DiskDrive").DeviceID })
+#			$PhysicalDisk
+#			Get-WmiObject Win32_DiskDrive | Where {$_.DeviceID -eq "\\.\PHYSICALDRIVE0"}
+			#Get-WmiObject Win32_DiskDrive | Where {[string]$_.DeviceID -eq [string]$PhysicalDisk} | Select *
+			#Get-WmiObject Win32_DiskDrive | Where {[string]$_.DeviceID -eq [string]$PhysicalDisk} | Select *
+#			exit
+#			$disk | Add-Member NoteProperty "Manufacturer" (Get-WmiObject Win32_DiskDrive | Where {$_.DeviceID -eq $PhysicalDisk}).Manufacturer
+#		}
+		
+#	}
+	$disks | format-table
 	
 }
+getDisk
 
 #Include getnet.ps1
 function getNet {
