@@ -1,3 +1,7 @@
+param ([Switch]$System,
+	   [Switch]$Disks,
+	   [Switch]$Network)
+
 # win32_computersystem
 #  System hardware description
 #  List format
@@ -59,7 +63,7 @@ function getDisk {
 	#$disks = Get-WmiObject Win32_LogicalDisk | Select {$_.GetRelated("Win32_DiskPartition").DeviceID}
 	""
 	"Storage"
-	$disks = Get-WmiObject win32_logicaldisk | select Description,DeviceID,Filesystem,`
+	$diskInfo = Get-WmiObject win32_logicaldisk | select Description,DeviceID,Filesystem,`
 		@{N="Manufacturer"; E={`
 			$tempID = $_.DeviceId;`
 			if($_.Description -eq "CD-ROM Disc"){(Get-WmiObject Win32_CdromDrive | Where {$_.Id -eq $tempID}).Manufacturer}`
@@ -79,7 +83,7 @@ function getDisk {
 		@{N="Free (%)"; E={[math]::Round($_.FreeSpace/$_.Size,2)*100}},`
 		@{N="Location"; E={if($_.Description -eq "CD-ROM Disc"){ "Optical Media"} else {$_.GetRelated("win32_diskpartition").DeviceID}}}
 
-	$disks | format-table
+	$diskInfo | format-table
 	
 }
 
@@ -100,9 +104,22 @@ function getVideo {
 #getCPU
 #getRam
 #getDisk
-getVideo
-#Include getnet.ps1
-function getNet {
-	#network report only
-}
+#getVideo
 
+#Include getnet.ps1
+
+function ParseParameters {
+	if(($System -eq $false) -And ($Disks -eq $false) -And ($Network -eq $false)){
+		getSystem;
+		getCPU;
+		getRam;
+		getDisk;
+		""; "Network"; getnet.ps1;
+	}
+	else{
+		if($System -eq $true){ getSystem; getCPU; getRam; }
+		if($Disks -eq $true){ getDisk; }
+		if($Network -eq $true){ ""; "Network"; getnet.ps1; }
+	}
+}
+ParseParameters
