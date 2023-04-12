@@ -9,14 +9,10 @@
 # win32_processor
 #  Processor description, speed, number of cores, sizes of L1/2/3 caches
 
-
-
-# win32_videocontroller
-#  Video card vendor, description, resolution (w x h)
-
 function getSystem {
 	# cpu, OS, RAM, Video
-	Write-Host "System Information"
+	""
+	"System Information"
 	$system = Get-WmiObject win32_computersystem | select Manufacturer,Model,DNSHostName,Domain,SystemType,@{N="User"; E={$_.PrimaryOwnerName}}
 	$system | Add-Member -NotePropertyName "OS" -NotePropertyValue (Get-WmiObject win32_operatingsystem).Caption
 	$system | Add-Member -NotePropertyName "Version" -NotePropertyValue (Get-WmiObject win32_operatingsystem).Version
@@ -24,7 +20,8 @@ function getSystem {
 }
 
 function getCPU {
-	Write-Host "Processors"
+	""
+	"Processors"
 
 	# Processor: MaxClockSpeed, NumberOfCores, L1/2/3 cache size if present
 	Get-WmiObject win32_processor | select Manufacturer,Description,Name,`
@@ -36,7 +33,8 @@ function getCPU {
 }
 
 function getRam {
-	Write-Host "Memory"
+	""
+	"Memory"
 # win32_physicalmemory
 #  RAM vendor, description, size, bank, slot for each DIMM (table), summary with total ram
 	$ramTotal = 0
@@ -59,6 +57,8 @@ function getRam {
 function getDisk {
 	# disk report only
 	#$disks = Get-WmiObject Win32_LogicalDisk | Select {$_.GetRelated("Win32_DiskPartition").DeviceID}
+	""
+	"Storage"
 	$disks = Get-WmiObject win32_logicaldisk | select Description,DeviceID,Filesystem,`
 		@{N="Manufacturer"; E={`
 			$tempID = $_.DeviceId;`
@@ -79,26 +79,28 @@ function getDisk {
 		@{N="Free (%)"; E={[math]::Round($_.FreeSpace/$_.Size,2)*100}},`
 		@{N="Location"; E={if($_.Description -eq "CD-ROM Disc"){ "Optical Media"} else {$_.GetRelated("win32_diskpartition").DeviceID}}}
 
-#	Foreach ($disk in $disks){
-#		if($disk.Description -eq "CD-ROM Disc"){
-#			$disk | Add-Member NoteProperty "Manufacturer" (Get-WmiObject Win32_CdromDrive | Where {$_.Drive -eq $disk.DeviceID} | Select Manufacturer).Manufacturer
-#		}
-#		else{
-#			$PhysicalDisk = (Get-WmiObject Win32_DiskPartition | Where {$_.DeviceID -eq $disk.Location} | Select { $_.GetRelated("Win32_DiskDrive").DeviceID })
-#			$PhysicalDisk
-#			Get-WmiObject Win32_DiskDrive | Where {$_.DeviceID -eq "\\.\PHYSICALDRIVE0"}
-			#Get-WmiObject Win32_DiskDrive | Where {[string]$_.DeviceID -eq [string]$PhysicalDisk} | Select *
-			#Get-WmiObject Win32_DiskDrive | Where {[string]$_.DeviceID -eq [string]$PhysicalDisk} | Select *
-#			exit
-#			$disk | Add-Member NoteProperty "Manufacturer" (Get-WmiObject Win32_DiskDrive | Where {$_.DeviceID -eq $PhysicalDisk}).Manufacturer
-#		}
-		
-#	}
 	$disks | format-table
 	
 }
-getDisk
 
+# win32_videocontroller
+#  Video card vendor, description, resolution (w x h)
+function getVideo {
+	""
+	"Display"
+	Get-WmiObject Win32_VideoController | `
+		Select Description, `
+		@{N="Resolution"; E={[string]$_.CurrentHorizontalResolution + " x " + [string]$_.CurrentVerticalResolution}}, `
+		@{N="Manufacturer"; E={$_.GetRelated("Win32_PnPEntity").Manufacturer}} `
+		| Format-List
+	
+}
+
+#getSystem
+#getCPU
+#getRam
+#getDisk
+getVideo
 #Include getnet.ps1
 function getNet {
 	#network report only
